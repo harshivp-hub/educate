@@ -83,7 +83,7 @@ const TeacherHome = () => {
     <div className="container">
       <div className="sidebar">
         <div className="logo">
-          <h1>Padh.ai</h1>
+          <h1>Educate</h1>
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
