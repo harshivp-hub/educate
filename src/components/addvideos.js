@@ -103,7 +103,7 @@ const VideoUpload = () => {
           <h1>Padh.ai</h1>
         </div>
         <ul className="menu">
-          <li><Link to={`/home/${userId}`}>Home</Link></li>
+          <li><Link to={`/teacherhome`}>Home</Link></li>
           <li className="active"><Link to={`/addvideos/${userId}`}>Add Videos</Link></li>
           <li><a href="#" onClick={navigateToTestPage}>Give Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>

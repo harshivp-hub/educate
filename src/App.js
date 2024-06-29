@@ -5,6 +5,7 @@ import Login from './components/Login';
 import Home from './components/home'
 import TeacherHome from './components/teacherhome';
 import VideoUpload from './components/addvideos';
+import TestPage from './components/test';
 function App() {
   return (
     <BrowserRouter>
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<Login />} /> 
           <Route path="/register" element={<Registration />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/test" element={<TestPage />} />
           <Route path="/teacherhome" element={<TeacherHome />} />
           <Route path="/addvideos" element={<VideoUpload />} />
          </Routes>

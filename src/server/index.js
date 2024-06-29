@@ -64,6 +64,45 @@ const videoSchema = new mongoose.Schema({
 
 const Video = mongoose.model('Video', videoSchema);
 
+
+// Define Task schema and model
+const taskSchema = new mongoose.Schema({
+    name: String,
+    dueDate: String,
+    status: String,
+    userId: String
+});
+
+const Task = mongoose.model('Task', taskSchema);
+
+// Define Schedule schema and model
+const scheduleSchema = new mongoose.Schema({
+    time: String,
+    class: String,
+    userId: String
+});
+
+const Schedule = mongoose.model('Schedule', scheduleSchema);
+const testSchema = new mongoose.Schema({
+    subject: { type: String, unique: true },
+    grade: { type: Number, required: true },
+    questions: [
+        {
+            question: String,
+            choices: [String]
+        }
+    ],
+    mcqs: [
+        {
+            question: String,
+            choices: [String],
+            answer: String
+        }
+    ],
+});
+
+const Test = mongoose.model('Test', testSchema);
+
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -215,6 +254,103 @@ app.get('/api/videos/:videoId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+// Task routes
+app.get('/api/tasks', async (req, res) => {
+    try {
+        const { userId } = req.query;
+        const tasks = await Task.find({ userId });
+        res.json(tasks);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching tasks' });
+    }
+});
+
+app.post('/api/tasks', async (req, res) => {
+    try {
+        const newTask = new Task(req.body);
+        const savedTask = await newTask.save();
+        res.json(savedTask);
+    } catch (error) {
+        res.status(500).json({ error: 'Error adding task' });
+    }
+});
+
+// Schedule routes
+app.get('/api/schedule', async (req, res) => {
+    try {
+        const { userId } = req.query;
+        const schedule = await Schedule.find({ userId });
+        res.json(schedule);
+    } catch (error) {
+        res.status(500).json({ error: 'Error fetching schedule' });
+    }
+});
+
+app.post('/api/schedule', async (req, res) => {
+    try {
+        const newSchedule = new Schedule(req.body);
+        const savedSchedule = await newSchedule.save();
+        res.json(savedSchedule);
+    } catch (error) {
+        res.status(500).json({ error: 'Error adding schedule' });
+    }
+});
+// Save Questions
+app.post('/api/questions', async (req, res) => {
+    const { subject, grade, questions } = req.body;
+    try {
+        const test = new Test({ subject, grade, questions, mcqs: [] });
+        await test.save();
+        res.status(201).json({ message: 'Questions saved successfully' });
+    } catch (error) {
+        console.error('Error saving questions:', error);
+        res.status(500).json({ error: 'Failed to save questions' });
+    }
+});
+
+// Save MCQs
+app.post('/api/mcqs', async (req, res) => {
+    const { subject, grade, mcqs } = req.body;
+    try {
+        const test = await Test.findOneAndUpdate(
+            { subject, grade },
+            { $set: { mcqs } },
+            { new: true, upsert: true }
+        );
+        res.status(201).json({ message: 'MCQs saved successfully' });
+    } catch (error) {
+        console.error('Error saving MCQs:', error);
+        res.status(500).json({ error: 'Failed to save MCQs' });
+    }
+});
+
+// Fetch Tests
+app.get('/api/tests', async (req, res) => {
+    try {
+        const tests = await Test.find({}, 'subject grade');
+        res.status(200).json(tests);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch tests' });
+    }
+});
+
+// Fetch Test by Subject
+app.get('/api/tests/:subject', async (req, res) => {
+    const { subject } = req.params;
+    try {
+        const test = await Test.findOne({ subject });
+        if (test) {
+            res.status(200).json(test);
+        } else {
+            res.status(404).json({ error: 'Test not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch test' });
+    }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

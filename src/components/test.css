@@ -1,0 +1,254 @@
+.test-page-container {
+    display: flex;
+    height: 100vh;
+    font-family: 'Courier New', Courier, monospace;
+}
+.container {
+    display: flex;
+}
+.test-page-sidebar {
+    width: 200px;
+    background-color: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.test-page-logo {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.test-page-menu {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
+
+.test-page-menu li {
+    width: 100%;
+    text-align: center;
+    margin: 10px 0;
+}
+
+.test-page-menu a {
+    color: #fff;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.test-page-active a {
+    background-color: #333;
+}
+
+.test-page-logout {
+    color: #fff;
+    text-decoration: none;
+    margin-top: 20px;
+    display: block;
+}
+
+.test-page-main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.test-page-header {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.test-page-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 20px;
+}
+select:not(:-internal-list-box) {
+    overflow: visible !important;
+    size: 20px;
+}
+.test-page-upload-test,
+.test-page-generate-test {
+    border: 1px solid #4f4f4f;
+    padding: 40px;
+    border-radius: 10px;
+    background-color: #e6e5e5;
+    flex: 1;
+    display: flex;
+    align-items: normal;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.test-page-upload-test > div,
+.test-page-generate-test > div {
+    max-width: 80%;
+    max-height: 80%;
+    display: flex;
+    flex-direction: column;
+}
+
+.test-page-upload-test h3,
+.test-page-generate-test h3,
+.test-page-active-tests h3 {
+    margin-top: 0;
+}
+
+.test-page-upload-test input,
+.test-page-generate-test input {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.test-page-upload-test button,
+.test-page-generate-test button {
+    background-color: #0a0a0a;
+    color: #fff;
+    border-radius: 10px;
+    margin-right: 10px;
+    max-width: 180px;
+}
+
+.test-page-available-tests {
+    margin-top: 20px;
+    border: 1px solid #4f4f4f;
+    padding: 40px;
+    border-radius: 10px;
+    background-color: #e6e5e5;
+    flex: 1;
+    display: flex;
+    align-items: normal;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.test-page-available-tests ul {
+    margin: unset;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.test-page-available-tests button {
+    background-color: #0a0a0a;
+    color: #fff;
+    border-radius: 10px;
+    margin-right: 10px;
+    max-width: 180px;
+    display: table;
+    table-layout: auto;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .test-page-container {
+        flex-direction: column;
+    }
+
+    .test-page-sidebar {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+    }
+
+    .test-page-menu {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .test-page-main-content {
+        padding: 10px;
+    }
+
+    .test-page-content {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .test-page-upload-test,
+    .test-page-generate-test,
+    .test-page-available-tests {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .test-page-logo {
+        font-size: 18px;
+    }
+
+    .test-page-menu {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .test-page-upload-test,
+    .test-page-generate-test,
+    .test-page-available-tests {
+        padding: 10px;
+    }
+
+    .test-page-upload-test > div,
+    .test-page-generate-test > div,
+    .test-page-available-tests > div {
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    .test-page-upload-test button,
+    .test-page-generate-test button,
+    .test-page-available-tests button {
+        max-width: 100%;
+        width: 100%;
+    }
+}
+
+@media (max-width: 360px) {
+    .test-page-container {
+        padding: 0;
+    }
+
+    .test-page-sidebar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .test-page-menu {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .test-page-main-content {
+        padding: 5px;
+    }
+
+    .test-page-content {
+        gap: 5px;
+    }
+
+    .test-page-upload-test,
+    .test-page-generate-test,
+    .test-page-available-tests {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .test-page-upload-test button,
+    .test-page-generate-test button,
+    .test-page-available-tests button {
+        margin: 5px 0;
+    }
+}
