@@ -337,10 +337,10 @@ app.get('/api/tests', async (req, res) => {
 });
 
 // Fetch Test by Subject
-app.get('/api/tests/:subject', async (req, res) => {
-    const { subject } = req.params;
+app.get('/api/tests/:_id', async (req, res) => {
+    const { _id } = req.params;
     try {
-        const test = await Test.findOne({ subject });
+        const test = await Test.findOne({ _id });
         if (test) {
             res.status(200).json(test);
         } else {
