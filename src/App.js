@@ -6,6 +6,9 @@ import Home from './components/home'
 import TeacherHome from './components/teacherhome';
 import VideoUpload from './components/addvideos';
 import TestPage from './components/test';
+import Test from './components/taketest';
+import ProfilePage from './components/profile';
+import TakeTestPage from './components/testpage';
 function App() {
   return (
     <BrowserRouter>
@@ -13,10 +16,14 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} /> 
           <Route path="/register" element={<Registration />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/test" element={<TestPage />} />
-          <Route path="/teacherhome" element={<TeacherHome />} />
-          <Route path="/addvideos" element={<VideoUpload />} />
+          <Route path="/home/:userId" element={<Home />} />
+          <Route path="/test/:userId" element={<TestPage />} />
+          <Route path="/teacherhome/:userId" element={<TeacherHome />} />
+          <Route path="/addvideos/:userId" element={<VideoUpload />} />
+          <Route path="/taketest/:userId/:grade" element={<Test />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/testpage/:testId" element={<TakeTestPage />} />
+
          </Routes>
       </div>
     </BrowserRouter>

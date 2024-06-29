@@ -24,9 +24,9 @@ const Login = () => {
         const { role } = roleResponse.data;
 
         if (role === 'teacher') {
-          navigate(`/teacherhome`);
+          navigate(`/teacherhome/${userId}`);
         } else if (role === 'student') {
-          navigate(`/home`);
+          navigate(`/home/${userId}`);
         } else {
           alert('Unknown role. Please contact support.');
         }
@@ -68,9 +68,9 @@ const Login = () => {
         const { role } = roleResponse.data;
 
         if (role === 'teacher') {
-          navigate(`/teacherhome`);
+          navigate(`/teacherhome/${userId}`);
         } else if (role === 'student') {
-          navigate(`/home`);
+          navigate(`/home/${userId}`);
         } else {
           alert('Unknown role. Please contact support.');
         }

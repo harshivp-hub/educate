@@ -76,7 +76,7 @@ const TeacherHome = () => {
   };
 
   const navigateToTestPage = () => {
-    navigate(`/test`);
+    navigate(`/test/${userId}`);
   };
 
   return (
@@ -87,10 +87,10 @@ const TeacherHome = () => {
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
-          <li><a href="/addvideos">Add Videos</a></li>
+          <li><Link to={`/addvideos/${userId}`}>Add Videos</Link></li>
           <li><a href="#" onClick={navigateToTestPage}>Give Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>
-          <li><a href="leaderboards">Class Performance</a></li>
+          <li><Link to={`/leaderboards/${userId}`}>Class Performance</Link></li>
         </ul>
         <div className="logout">
           <a href="#">Log Out</a>
@@ -105,9 +105,9 @@ const TeacherHome = () => {
             <h2>Quick Links</h2>
             <div className="links">
               <button>Class Summary</button>
-              <button><Link to="/addvideos">Add Videos</Link></button>
+              <button><Link to={`/addvideos/${userId}`}>Add Videos</Link></button>
               <button><Link to={`/findstudent/${userId}`}>Find Student</Link></button>
-              <button><Link to="/create-task">Create Task</Link></button>
+              <button><Link to={`/create-task/${userId}`}>Create Task</Link></button>
               <button><Link to={`/profile/${userId}`}>Profile</Link></button>
             </div>
           </div>

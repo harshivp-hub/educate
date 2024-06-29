@@ -75,8 +75,8 @@ const Home = () => {
     }
   };
 
-  const navigateToTestPage = () => {
-    navigate(`/test/${userId}`);
+  const navigateToTestPage = (grade) => {
+    navigate(`/taketest/${userId}/${grade}`);
   };
 
   return (
@@ -87,8 +87,8 @@ const Home = () => {
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
-          <li><a href="">Videos</a></li>
-          <li><a href="#" onClick={navigateToTestPage}>Tests</a></li>
+          <li><a href="#">Videos</a></li>
+          <li><a href="" onClick={() => navigateToTestPage(10)}>Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>
           <li><a href="#">Performance</a></li>
         </ul>

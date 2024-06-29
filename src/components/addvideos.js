@@ -93,7 +93,7 @@ const VideoUpload = () => {
   };
 
   const navigateToTestPage = () => {
-    navigate(`/test/${userId}`);
+    navigate(`/test`);
   };
 
   return (
