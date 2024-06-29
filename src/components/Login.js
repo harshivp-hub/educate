@@ -19,7 +19,17 @@ const Login = () => {
 
       if (response.status === 200) {
         const { userId } = response.data;
-        navigate(`/home`);
+        // Fetch user role after successful login
+        const roleResponse = await axios.get(`http://localhost:3001/api/users/${userId}`);
+        const { role } = roleResponse.data;
+
+        if (role === 'teacher') {
+          navigate(`/teacherhome`);
+        } else if (role === 'student') {
+          navigate(`/home`);
+        } else {
+          alert('Unknown role. Please contact support.');
+        }
       } else {
         alert('Login failed. Please check your credentials.');
       }
@@ -53,7 +63,17 @@ const Login = () => {
   
       if (response.status === 200) {
         const { userId } = response.data;
-        navigate(`/home/${userId}`);
+        // Fetch user role after successful login
+        const roleResponse = await axios.get(`http://localhost:3001/api/users/${userId}`);
+        const { role } = roleResponse.data;
+
+        if (role === 'teacher') {
+          navigate(`/teacherhome`);
+        } else if (role === 'student') {
+          navigate(`/home`);
+        } else {
+          alert('Unknown role. Please contact support.');
+        }
       } else {
         alert('Google login failed.');
       }
@@ -63,11 +83,10 @@ const Login = () => {
     }
   };
   
-  
   return (
     <div className="container">
       <div className="black-section">
-        <h1>Padh.<span style={{ fontWeight: "normal" }}>ai</span></h1>
+        <h1>Educate.<span style={{ fontWeight: "normal" }}>AI</span></h1>
         <p>Teachers are meant to teach</p>
       </div>
       <div className="white-section">
@@ -94,10 +113,12 @@ const Login = () => {
             />
           </div>
           <button type="submit" className="login-button">Login</button>
+         
+          <Link to="/register" className="register-button">Register User</Link>
+          <br></br>
           <button type="button" className="google-login-button" onClick={handleGoogleLogin}>
             Login with Google
           </button>
-          <Link to="/register" className="register-user">Register User</Link>
         </form>
       </div>
     </div>

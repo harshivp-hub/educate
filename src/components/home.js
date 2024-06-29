@@ -87,7 +87,6 @@ const Home = () => {
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
-          <li><a href="#">Timetable</a></li>
           <li><a href="">Videos</a></li>
           <li><a href="#" onClick={navigateToTestPage}>Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>
@@ -110,7 +109,6 @@ const Home = () => {
               <button>Give Feedback</button>
               <button>Create Task</button>
               <button>Profile</button>
-              
             </div>
           </div>
           <div className="books">

@@ -9,6 +9,8 @@ const Registration = () => {
   const [password, setPassword] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
   const [dob, setDob] = useState('');
+  const [grade, setGrade] = useState('');
+  const [role, setRole] = useState('student'); // Default role is student
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,7 +22,9 @@ const Registration = () => {
         email,
         password,
         mobileNumber,
-        dob
+        dob,
+        grade,
+        role // Include role in the registration data
       }, {
         headers: {
           'Content-Type': 'application/json'
@@ -45,25 +49,39 @@ const Registration = () => {
         <p>Welcome,<br />Please register to access your portal</p>
         <form onSubmit={handleSubmit} className="registration-form">
           <div className="input-container">
+            <label>Role:</label><br />
+            <select value={role} onChange={e => setRole(e.target.value)}>
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
+          </div>
+          <div className="input-container">
             <label htmlFor="name">Name:</label><br />
-            <input type="text" id="name" name="name" onChange={e => setName(e.target.value)} />
+            <input type="text" id="name" name="name" onChange={e => setName(e.target.value)} required />
           </div>
           <div className="input-container">
             <label htmlFor="mobileNumber">Mobile Number:</label><br />
-            <input type="text" id="mobileNumber" name="mobileNumber" onChange={e => setMobileNumber(e.target.value)} />
+            <input type="text" id="mobileNumber" name="mobileNumber" onChange={e => setMobileNumber(e.target.value)} required />
           </div>
+          {role === 'student' && (
+            <div className="input-container">
+              <label htmlFor="grade">Grade:</label><br />
+              <input type="text" id="grade" name="grade" onChange={e => setGrade(e.target.value)} required />
+            </div>
+          )}
           <div className="input-container">
             <label htmlFor="dob">Date of Birth:</label><br />
-            <input type="date" id="dob" name="dob" onChange={e => setDob(e.target.value)} />
+            <input type="date" id="dob" name="dob" onChange={e => setDob(e.target.value)} required />
           </div>
           <div className="input-container">
             <label htmlFor="email">Email ID:</label><br />
-            <input type="text" id="email" name="email" onChange={e => setEmail(e.target.value)} />
+            <input type="email" id="email" name="email" onChange={e => setEmail(e.target.value)} required />
           </div>
           <div className="input-container">
             <label htmlFor="password">Password:</label><br />
-            <input type="password" id="password" name="password" onChange={e => setPassword(e.target.value)} />
+            <input type="password" id="password" name="password" onChange={e => setPassword(e.target.value)} required />
           </div>
+          
           <Link to="/" className="login-user">Login User</Link>
           <button type="submit" className="register-button">Register</button>
         </form>

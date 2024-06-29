@@ -94,26 +94,36 @@ header {
     flex: 2;
 }
 
-.quick-links h2, .books h2, .schedule h2, .tasks h2 {
+.quick-links  {
+    text-decoration: none;
     margin-top: 0;
 }
 
 .quick-links .links {
+    text-decoration: none;
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 10px;
+    color: #000;
 }
 
 .quick-links button {
+    text-decoration: none;
     flex: 1;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
     background-color: #f8f9fa;
     cursor: pointer;
+    color: #000;
 }
 
+.quick-links button a:-webkit-any-link {
+    color: #000;
+    cursor: pointer;
+    text-decoration: none;
+}
 .quick-links button:hover {
     background-color: #e9ecef;
 }
