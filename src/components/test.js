@@ -15,7 +15,7 @@ const TestPage = () => {
   useEffect(() => {
     fetchUserName();
     fetchAvailableTests();
-  }, []);
+  }, [],[userId]);
 
   const fetchUserName = async () => {
     try {
@@ -166,7 +166,7 @@ const TestPage = () => {
   };
 
   const handleTakeTest = (subject) => {
-    navigate(`/take-test/${subject}`);
+    navigate(`/taketest/${subject}`);
   };
 
   return (
@@ -174,8 +174,8 @@ const TestPage = () => {
       <div className="test-page-sidebar">
         <h1 className="test-page-logo">Padh.ai</h1>
         <ul className="menu">
-          <li className="home"><a href="/teacherhome">Home</a></li>
-          <li><a href="/addvideos">Add Videos</a></li>
+          <li className="home"><a href="/teacherhome/:userId">Home</a></li>
+          <li><a href="/addvideos/:userId">Add Videos</a></li>
           <li className="active"><a>Give Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>
           <li><a href="leaderboards">Class Performance</a></li>

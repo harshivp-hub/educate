@@ -9,12 +9,13 @@ import TestPage from './components/test';
 import Test from './components/taketest';
 import ProfilePage from './components/profile';
 import TakeTestPage from './components/testpage';
+import VideoListByGrade from './components/video';
 function App() {
   return (
     <BrowserRouter>
       <div className="App">
         <Routes>
-          <Route path="/" element={<Login />} /> 
+          <Route path="/" element={<Login />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/home/:userId" element={<Home />} />
           <Route path="/test/:userId" element={<TestPage />} />
@@ -23,6 +24,8 @@ function App() {
           <Route path="/taketest/:userId/:grade" element={<Test />} />
           <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route path="/testpage/:testId" element={<TakeTestPage />} />
+          <Route path="/videos/:grade" element={<VideoListByGrade />} />
+
 
          </Routes>
       </div>
