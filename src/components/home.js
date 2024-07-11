@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './home.css';
 
 const Home = () => {
-  const { userId } = useParams();
   const [userName, setUserName] = useState('');
   const [tasks, setTasks] = useState([]);
   const [schedule, setSchedule] = useState([]);
-  const [newTask, setNewTask] = useState({ name: '', dueDate: '', status: '', userId });
-  const [newSchedule, setNewSchedule] = useState({ time: '', class: '', userId });
+  const [newTask, setNewTask] = useState({ name: '', dueDate: '', status: '' });
+  const [newSchedule, setNewSchedule] = useState({ time: '', class: '' });
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchUserData = async (userId) => {
       try {
         const userResponse = await fetch(`http://localhost:3001/api/users/${userId}`);
         const userData = await userResponse.json();
@@ -22,7 +21,7 @@ const Home = () => {
       }
     };
 
-    const fetchTasks = async () => {
+    const fetchTasks = async (userId) => {
       try {
         const tasksResponse = await fetch(`http://localhost:3001/api/tasks?userId=${userId}`);
         const tasksData = await tasksResponse.json();
@@ -32,7 +31,7 @@ const Home = () => {
       }
     };
 
-    const fetchSchedule = async () => {
+    const fetchSchedule = async (userId) => {
       try {
         const scheduleResponse = await fetch(`http://localhost:3001/api/schedule?userId=${userId}`);
         const scheduleData = await scheduleResponse.json();
@@ -42,10 +41,17 @@ const Home = () => {
       }
     };
 
-    fetchUserData();
-    fetchTasks();
-    fetchSchedule();
-  }, [userId]);
+    const userId = sessionStorage.getItem('userId');
+    if (userId) {
+      fetchUserData(userId);
+      fetchTasks(userId);
+      fetchSchedule(userId);
+      setNewTask((prevState) => ({ ...prevState, userId }));
+      setNewSchedule((prevState) => ({ ...prevState, userId }));
+    } else {
+      navigate('/'); // Redirect to login if no userId found in session
+    }
+  }, [navigate]);
 
   const handleAddTask = async () => {
     try {
@@ -76,24 +82,30 @@ const Home = () => {
   };
 
   const navigateToTestPage = (grade) => {
+    const userId = sessionStorage.getItem('userId');
     navigate(`/taketest/${userId}/${grade}`);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate('/');
   };
 
   return (
     <div className="container">
       <div className="sidebar">
         <div className="logo">
-          <h1>Padh.ai</h1>
+          <h1>Educate</h1>
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
           <li><a href="/videos/:grade">Videos</a></li>
           <li><a href="" onClick={() => navigateToTestPage(10)}>Tests</a></li>
-          <li><Link to={`/profile/${userId}`}>Profile</Link></li>
+          <li><Link to={`/profile/${sessionStorage.getItem('userId')}`}>Profile</Link></li>
           <li><a href="#">Performance</a></li>
         </ul>
         <div className="logout">
-          <a href="#">Log Out</a>
+          <a href="#" onClick={handleLogout}>Log Out</a>
         </div>
       </div>
       <div className="main-content">

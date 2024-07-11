@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import './login.css';
+
+const clientId = '778256795761-s8j6g5kq4mevkcul0kd72jpp1fvnmoes.apps.googleusercontent.com';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -10,26 +13,16 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.post('http://localhost:3001/api/users/login', {
         email,
         password
-      });
+      }, { withCredentials: true });
 
       if (response.status === 200) {
-        const { userId } = response.data;
-        // Fetch user role after successful login
-        const roleResponse = await axios.get(`http://localhost:3001/api/users/${userId}`);
-        const { role } = roleResponse.data;
-
-        if (role === 'teacher') {
-          navigate(`/teacherhome/${userId}`);
-        } else if (role === 'student') {
-          navigate(`/home/${userId}`);
-        } else {
-          alert('Unknown role. Please contact support.');
-        }
+        const { role } = response.data; // Assuming response contains user role
+        sessionStorage.setItem('userId', response.data.userId); // Store userId in session storage
+        navigate(role === 'teacher' ? `/teacherhome` : `/home`);
       } else {
         alert('Login failed. Please check your credentials.');
       }
@@ -39,41 +32,15 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const onGoogleSuccess = async (credentialResponse) => {
+    const token = credentialResponse.credential;
     try {
-      await new Promise((resolve, reject) => {
-        window.gapi.load('auth2', {
-          callback: resolve,
-          onerror: reject,
-          timeout: 10000, // 10 seconds timeout
-        });
-      });
-  
-      const googleAuth = await window.gapi.auth2.getAuthInstance();
-      if (!googleAuth) {
-        throw new Error('Failed to get Google Auth instance');
-      }
-  
-      const googleUser = await googleAuth.signIn();
-      const token = googleUser.getAuthResponse().id_token;
-  
-      const response = await axios.post('http://localhost:3001/api/users/google-login', {
-        token
-      });
-  
-      if (response.status === 200) {
-        const { userId } = response.data;
-        // Fetch user role after successful login
-        const roleResponse = await axios.get(`http://localhost:3001/api/users/${userId}`);
-        const { role } = roleResponse.data;
+      const response = await axios.post('http://localhost:3001/api/users/google-login', { token }, { withCredentials: true });
 
-        if (role === 'teacher') {
-          navigate(`/teacherhome/${userId}`);
-        } else if (role === 'student') {
-          navigate(`/home/${userId}`);
-        } else {
-          alert('Unknown role. Please contact support.');
-        }
+      if (response.status === 200) {
+        const { role } = response.data; // Assuming response contains user role
+        sessionStorage.setItem('userId', response.data.userId); // Store userId in session storage
+        navigate(role === 'teacher' ? `/teacherhome` : `/home`);
       } else {
         alert('Google login failed.');
       }
@@ -82,11 +49,16 @@ const Login = () => {
       alert('Google login failed.');
     }
   };
-  
+
+  const onGoogleFailure = (error) => {
+    console.error('Google login failed:', error);
+    alert('Google login failed.');
+  };
+
   return (
     <div className="container">
       <div className="black-section">
-        <h1>Educate.<span style={{ fontWeight: "normal" }}>AI</span></h1>
+        <h1>Padh.<span style={{ fontWeight: "normal" }}>AI</span></h1>
         <p>Teachers are meant to teach</p>
       </div>
       <div className="white-section">
@@ -112,13 +84,22 @@ const Login = () => {
               onChange={e => setPassword(e.target.value)}
             />
           </div>
+          <br /><br />
           <button type="submit" className="login-button">Login</button>
-         
           <Link to="/register" className="register-button">Register User</Link>
-          <br></br>
-          <button type="button" className="google-login-button" onClick={handleGoogleLogin}>
-            Login with Google
-          </button>
+          <br /><br />
+          <GoogleOAuthProvider clientId={clientId}>
+            <GoogleLogin
+              onSuccess={onGoogleSuccess}
+              onError={onGoogleFailure}
+              useOneTap
+              render={(renderProps) => (
+                <button onClick={renderProps.onClick} disabled={renderProps.disabled} className="google-login-button">
+                  Login with Google
+                </button>
+              )}
+            />
+          </GoogleOAuthProvider>
         </form>
       </div>
     </div>

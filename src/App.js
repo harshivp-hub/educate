@@ -10,6 +10,7 @@ import Test from './components/taketest';
 import ProfilePage from './components/profile';
 import TakeTestPage from './components/testpage';
 import VideoListByGrade from './components/video';
+import Timetable from './components/timetable';
 function App() {
   return (
     <BrowserRouter>
@@ -17,15 +18,16 @@ function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/register" element={<Registration />} />
-          <Route path="/home/:userId" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/test/:userId" element={<TestPage />} />
-          <Route path="/teacherhome/:userId" element={<TeacherHome />} />
+          <Route path="/teacherhome" element={<TeacherHome />} />
           <Route path="/addvideos/:userId" element={<VideoUpload />} />
           <Route path="/taketest/:userId/:grade" element={<Test />} />
           <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route path="/testpage/:testId" element={<TakeTestPage />} />
           <Route path="/videos/:grade" element={<VideoListByGrade />} />
-
+          <Route path="/timetable" element={<Timetable />} />
+          
 
          </Routes>
       </div>

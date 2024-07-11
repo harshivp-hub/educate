@@ -6,10 +6,22 @@ const { v4: uuidv4 } = require('uuid');
 const { OAuth2Client } = require('google-auth-library');
 const multer = require('multer');
 const path = require('path');
-
+const session = require('express-session');
+const bcrypt = require('bcryptjs');
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
+
+// Session setup
+app.use(session({
+  secret: '778256795761-s8j6g5kq4mevkcul0kd7', // Change this to a strong, unique secret key
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true if using HTTPS
+}));
 
 // Set up storage for multer
 const storage = multer.diskStorage({
@@ -37,7 +49,6 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB');
 });
-
 // Define schemas and models
 const userSchema = new mongoose.Schema({
   userId: { type: String, unique: true },
@@ -47,10 +58,145 @@ const userSchema = new mongoose.Schema({
   mobileNumber: String,
   grade: String,
   dob: Date,
-  role: String // Adding role field
+  role: String
+});
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  const user = this;
+  if (!user.isModified('password')) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(user.password, salt);
+  user.password = hash;
+  next();
 });
 
 const User = mongoose.model('User', userSchema);
+// API endpoints
+
+// Register new user with role
+app.post('/api/users/register', async (req, res) => {
+  const { name, email, password, mobileNumber, grade, dob, role } = req.body;
+  const userId = uuidv4();
+
+  try {
+    const newUser = new User({
+      userId,
+      name,
+      email,
+      password,
+      mobileNumber,
+      grade,
+      dob,
+      role
+    });
+
+    await newUser.save();
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.post('/api/users/register', async (req, res) => {
+  const { name, email, password, mobileNumber, grade, dob, role } = req.body;
+
+  try {
+    const newUser = new User({
+      userId: uuidv4(),
+      name,
+      email,
+      password, // Password will be hashed in pre-save hook
+      mobileNumber,
+      grade,
+      dob,
+      role
+    });
+
+    await newUser.save();
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// User login
+app.post('/api/users/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        req.session.userId = user.userId; // Save userId to session
+        req.session.role = user.role; // Save role to session
+        res.status(200).json({ userId: user.userId, name: user.name, role: user.role });
+      } else {
+        res.status(401).json({ error: 'Invalid email or password' });
+      }
+    } else {
+      res.status(401).json({ error: 'Invalid email or password' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Google login
+app.post('/api/users/google-login', async (req, res) => {
+  const { token, role } = req.body;
+
+  try {
+    const ticket = await googleClient.verifyIdToken({
+      idToken: token,
+      audience: '778256795761-s8j6g5kq4mevkcul0kd72jpp1fvnmoes.apps.googleusercontent.com',
+    });
+    const payload = ticket.getPayload();
+    const email = payload.email;
+
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = new User({
+        userId: uuidv4(),
+        name: payload.name,
+        email,
+        password: '', // Empty password for OAuth users
+        mobileNumber: '',
+        dob: null,
+        role
+      });
+      await user.save();
+    }
+
+    req.session.userId = user.userId; // Save userId to session
+    req.session.role = user.role; // Save role to session
+    res.status(200).json({ userId: user.userId, name: user.name, role: user.role });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Google login failed' });
+  }
+});
+
+// Fetch user information
+app.get('/api/users/me', (req, res) => {
+  const userId = req.session.userId;
+  if (!userId) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  User.findOne({ userId }, (err, user) => {
+    if (err) return res.status(500).json({ error: 'Internal Server Error' });
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.status(200).json(user);
+  });
+});
+// Define schemas and models
+
 
 const videoSchema = new mongoose.Schema({
   videoId: { type: String, unique: true },
@@ -64,8 +210,6 @@ const videoSchema = new mongoose.Schema({
 
 const Video = mongoose.model('Video', videoSchema);
 
-
-// Define Task schema and model
 const taskSchema = new mongoose.Schema({
     name: String,
     dueDate: String,
@@ -75,7 +219,6 @@ const taskSchema = new mongoose.Schema({
 
 const Task = mongoose.model('Task', taskSchema);
 
-// Define Schedule schema and model
 const scheduleSchema = new mongoose.Schema({
     time: String,
     class: String,
@@ -83,6 +226,7 @@ const scheduleSchema = new mongoose.Schema({
 });
 
 const Schedule = mongoose.model('Schedule', scheduleSchema);
+
 const testSchema = new mongoose.Schema({
     subject: { type: String, unique: true },
     grade: { type: Number, required: true },
@@ -108,80 +252,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API endpoints
 
-// Register new user with role
-app.post('/api/users/register', async (req, res) => {
-  const { name, email, password, mobileNumber, grade, dob, role } = req.body;
-  const userId = uuidv4();
-
-  try {
-    const newUser = new User({
-      userId,
-      name,
-      email,
-      password,
-      mobileNumber,
-      grade,
-      dob,
-      role // Save role in the database
-    });
-
-    await newUser.save();
-    res.status(201).json(newUser);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// User login
-app.post('/api/users/login', async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email, password });
-    if (user) {
-      res.status(200).json({ userId: user.userId, name: user.name, role: user.role }); // Return role
-    } else {
-      res.status(401).json({ error: 'Invalid email or password' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Google login
-app.post('/api/users/google-login', async (req, res) => {
-  const { token, role } = req.body; // Added role from frontend
-
-  try {
-    const ticket = await googleClient.verifyIdToken({
-      idToken: token,
-      audience: '778256795761-s8j6g5kq4mevkcul0kd72jpp1fvnmoes.apps.googleusercontent.com',
-    });
-    const payload = ticket.getPayload();
-    const email = payload.email;
-
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = new User({
-        userId: uuidv4(),
-        name: payload.name,
-        email,
-        password: '', // Empty password for OAuth users
-        mobileNumber: '',
-        dob: null,
-        role // Assign role from Google login
-      });
-      await user.save();
-    }
-
-    res.status(200).json({ userId: user.userId, name: user.name, role: user.role }); // Return role
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Google login failed' });
-  }
-});
 
 // Fetch user information
 app.get('/api/users/:userId', async (req, res) => {
@@ -255,7 +325,6 @@ app.get('/api/videos/:videoId', async (req, res) => {
   }
 });
 
-
 // Task routes
 app.get('/api/tasks', async (req, res) => {
     try {
@@ -297,61 +366,27 @@ app.post('/api/schedule', async (req, res) => {
         res.status(500).json({ error: 'Error adding schedule' });
     }
 });
-// Save Questions
-app.post('/api/questions', async (req, res) => {
-    const { subject, grade, questions } = req.body;
-    try {
-        const test = new Test({ subject, grade, questions, mcqs: [] });
-        await test.save();
-        res.status(201).json({ message: 'Questions saved successfully' });
-    } catch (error) {
-        console.error('Error saving questions:', error);
-        res.status(500).json({ error: 'Failed to save questions' });
-    }
-});
 
-// Save MCQs
-app.post('/api/mcqs', async (req, res) => {
-    const { subject, grade, mcqs } = req.body;
-    try {
-        const test = await Test.findOneAndUpdate(
-            { subject, grade },
-            { $set: { mcqs } },
-            { new: true, upsert: true }
-        );
-        res.status(201).json({ message: 'MCQs saved successfully' });
-    } catch (error) {
-        console.error('Error saving MCQs:', error);
-        res.status(500).json({ error: 'Failed to save MCQs' });
-    }
-});
-
-// Fetch Tests
+// Tests routes
 app.get('/api/tests', async (req, res) => {
     try {
-        const tests = await Test.find({}, 'subject grade');
-        res.status(200).json(tests);
+        const tests = await Test.find();
+        res.json(tests);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch tests' });
+        res.status(500).json({ error: 'Error fetching tests' });
     }
 });
 
-// Fetch Test by Subject
-app.get('/api/tests/:_id', async (req, res) => {
-    const { _id } = req.params;
+app.post('/api/tests', async (req, res) => {
     try {
-        const test = await Test.findOne({ _id });
-        if (test) {
-            res.status(200).json(test);
-        } else {
-            res.status(404).json({ error: 'Test not found' });
-        }
+        const newTest = new Test(req.body);
+        const savedTest = await newTest.save();
+        res.json(savedTest);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch test' });
+        res.status(500).json({ error: 'Error adding test' });
     }
 });
-
 
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });

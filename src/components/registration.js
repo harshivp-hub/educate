@@ -23,7 +23,7 @@ const Registration = () => {
         password,
         mobileNumber,
         dob,
-        grade,
+        grade: role === 'student' ? grade : '', // Set grade only if role is student
         role // Include role in the registration data
       }, {
         headers: {
@@ -57,29 +57,71 @@ const Registration = () => {
           </div>
           <div className="input-container">
             <label htmlFor="name">Name:</label><br />
-            <input type="text" id="name" name="name" onChange={e => setName(e.target.value)} required />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+            />
           </div>
           <div className="input-container">
             <label htmlFor="mobileNumber">Mobile Number:</label><br />
-            <input type="text" id="mobileNumber" name="mobileNumber" onChange={e => setMobileNumber(e.target.value)} required />
+            <input
+              type="text"
+              id="mobileNumber"
+              name="mobileNumber"
+              value={mobileNumber}
+              onChange={e => setMobileNumber(e.target.value)}
+              required
+            />
           </div>
           {role === 'student' && (
             <div className="input-container">
               <label htmlFor="grade">Grade:</label><br />
-              <input type="text" id="grade" name="grade" onChange={e => setGrade(e.target.value)} required />
+              <input
+                type="text"
+                id="grade"
+                name="grade"
+                value={grade}
+                onChange={e => setGrade(e.target.value)}
+                required
+              />
             </div>
           )}
           <div className="input-container">
             <label htmlFor="dob">Date of Birth:</label><br />
-            <input type="date" id="dob" name="dob" onChange={e => setDob(e.target.value)} required />
+            <input
+              type="date"
+              id="dob"
+              name="dob"
+              value={dob}
+              onChange={e => setDob(e.target.value)}
+              required
+            />
           </div>
           <div className="input-container">
             <label htmlFor="email">Email ID:</label><br />
-            <input type="email" id="email" name="email" onChange={e => setEmail(e.target.value)} required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="input-container">
             <label htmlFor="password">Password:</label><br />
-            <input type="password" id="password" name="password" onChange={e => setPassword(e.target.value)} required />
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+            />
           </div>
           
           <Link to="/" className="login-user">Login User</Link>
