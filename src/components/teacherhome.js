@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import './home.css';
 
 const TeacherHome = () => {
-  const { userId } = useParams();
+  const userId = sessionStorage.getItem('userId'); // Get userId from session storage
   const [userName, setUserName] = useState('');
   const [tasks, setTasks] = useState([]);
   const [schedule, setSchedule] = useState([]);
@@ -78,6 +78,10 @@ const TeacherHome = () => {
   const navigateToTestPage = () => {
     navigate(`/test/${userId}`);
   };
+  const handleLogout = () => {
+    sessionStorage.clear();
+    navigate('/');
+  };
 
   return (
     <div className="container">
@@ -87,13 +91,13 @@ const TeacherHome = () => {
         </div>
         <ul className="menu">
           <li className="active"><a href="#">Home</a></li>
-          <li><Link to={`/addvideos/${userId}`}>Add Videos</Link></li>
-          <li><a href="#" onClick={navigateToTestPage}>Give Tests</a></li>
+          <li><Link to={`/timetable`}>Timetable</Link></li>
+          <li><a href="" onClick={navigateToTestPage}>Give Tests</a></li>
           <li><Link to={`/profile/${userId}`}>Profile</Link></li>
           <li><Link to={`/leaderboards/${userId}`}>Class Performance</Link></li>
         </ul>
         <div className="logout">
-          <a href="#">Log Out</a>
+          <a href="#" onClick={handleLogout}>Log Out</a>
         </div>
       </div>
       <div className="main-content">
@@ -107,7 +111,7 @@ const TeacherHome = () => {
               <button>Class Summary</button>
               <button><Link to={`/addvideos/${userId}`}>Add Videos</Link></button>
               <button><Link to={`/findstudent/${userId}`}>Find Student</Link></button>
-              <button><Link to={`/create-task/${userId}`}>Create Task</Link></button>
+              <button><Link to={`/#`}>Create Task</Link></button>
               <button><Link to={`/profile/${userId}`}>Profile</Link></button>
             </div>
           </div>
